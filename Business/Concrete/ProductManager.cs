@@ -21,5 +21,16 @@ namespace Business.Concrete
             //Yetkisi var mı?
             return _productDal.GetAll();
         }
+
+        public List<Product> GetAllByCategoryId(int ıd)
+        {
+            //business:iş kuralları bunlar
+            return _productDal.GetAll(p=> p.CategoryId==ıd);// her p için pnin categorydsi benım categoryıdme(ıd) eşitse filtrele
+        }
+
+        public List<Product> GetAllByUnitPrice(decimal min, decimal max)
+        {
+            return _productDal.GetAll(p => p.UnitPrice>=min && p.UnitPrice<=max);
+        }
     }
 }
