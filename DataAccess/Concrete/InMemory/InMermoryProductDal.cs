@@ -3,6 +3,7 @@ using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace DataAccess.Concrete.InMemory
@@ -47,13 +48,23 @@ namespace DataAccess.Concrete.InMemory
 
         }
 
+        public Product Get(Expression<Func<Product, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+
         //veritabanındaki datayı businees a gönderme. yani ürün listesi yolluyor
         public List<Product> GetAll()
         {
             return _products;
         }
 
-        public List<Product> GetAllByCategory(int categoryId)
+        public List<Product> GetAll(Expression<Func<Product, bool>> filter = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Product> GetAllByCategory(int categoryId)//categorye göre listeleme
         {
             return _products.Where(p => p.CategoryId == categoryId).ToList(); //where içinde bulunan şarta uyan tüm elemanları liste yapıp döndürür
             //where=foreach
