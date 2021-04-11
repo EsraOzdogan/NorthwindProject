@@ -42,32 +42,36 @@ namespace Business.Concrete
         {
             //iş kodları
             //Yetkisi var mı?
-            if (DataTime.Now.Hour==22)
+            if (DateTime.Now.Hour==22)
             {
-                return new ErrorDataResult();
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
             }
-            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),true,"ürünler listelendi");
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),Messages.ProductsListed);
         }
 
-        public List<Product> GetAllByCategoryId(int ıd)
+        public IDataResult<List<Product>> GetAllByCategoryId(int ıd)
         {
             //business:iş kuralları bunlar
-            return _productDal.GetAll(p=> p.CategoryId==ıd);// her p için pnin categorydsi benım categoryıdme(ıd) eşitse filtrele
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p=> p.CategoryId==ıd));// her p için pnin categorydsi benım categoryıdme(ıd) eşitse filtrele
+        }
+        public IDataResult<Product> GetById(int productId)
+        {
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
 
-        public List<Product> GetAllByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetAll(p => p.UnitPrice>=min && p.UnitPrice<=max);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice>=min && p.UnitPrice<=max));
         }
 
-        public Product GetById(int productId)
+        
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.Get(p=> p.ProductId==productId);
-        }
-
-        public List<ProductDetailDto> GetProductDetails()
-        {
-            return _productDal.GetProductDetails();
+           /* if (DateTime.Now.Hour == 16)
+            {
+                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
+            }*/
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
     }
 }

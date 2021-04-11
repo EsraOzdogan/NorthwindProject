@@ -47,12 +47,21 @@ namespace ConsoleUI
             }*/
 
 
-            ProductManager productManager = new ProductManager(new EfProductDal()); 
-
-            foreach (var product in productManager.GetProductDetails())
+            ProductManager productManager = new ProductManager(new EfProductDal());
+            var result = productManager.GetProductDetails();
+            if (result.Success==true)
             {
-                Console.WriteLine(product.ProductName + "/" +product.CategoryName); //yani join oldu
+                foreach (var product in result.Data)
+                {
+                    Console.WriteLine(product.ProductName + "/" + product.CategoryName); //yani join oldu
+                }
+
             }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+           
         }
 
 
