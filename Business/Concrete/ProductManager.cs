@@ -42,6 +42,7 @@ namespace Business.Concrete
         {
             //iş kodları
             //Yetkisi var mı?
+            //return _productDal.GetAll();
             if (DateTime.Now.Hour==22)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
