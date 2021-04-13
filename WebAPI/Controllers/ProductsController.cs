@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
@@ -25,8 +26,8 @@ namespace WebAPI.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
-        public List<Product> Get()
+        [HttpGet("getall")]//alians
+        public IActionResult GetAll()
         {
             /*return new List<Product>
             {
@@ -42,8 +43,67 @@ namespace WebAPI.Controllers
             var result = productService.GetAll();
             return result.Data;*/
 
+            //Swagger
+
+            Thread.Sleep(1000);
+
             var result = _productService.GetAll();
-            return result.Data;
+            if (result.Success)//if(result.Success==true) aynı şey
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+
+        }
+
+
+        [HttpGet("getbyid")]
+        public IActionResult GetById(int id)
+        {
+            var result = _productService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+
+        }
+
+        [HttpGet("getbycategory")]
+        public IActionResult GetByCategory(int categoryId)
+        {
+            var result = _productService.GetAllByCategoryId(categoryId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+
+        [HttpGet("getproductdetails")]
+        public IActionResult GetProductDetails()
+        {
+            var result = _productService.GetProductDetails();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+
+        [HttpPost("add")]
+        public IActionResult Add(Product product)
+        {    
+            var result = _productService.Add(product);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
 
         }
     }

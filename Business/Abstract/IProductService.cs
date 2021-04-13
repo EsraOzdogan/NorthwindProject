@@ -12,6 +12,7 @@ namespace Business.Abstract
     {
         // List<Product> GetAll();
         IDataResult<List<Product>> GetAll();
+
         IDataResult<List<Product>> GetAllByCategoryId(int ıd);               //categoryıdye göre geitiryor, eticarette sol tarafta category ıdye göre getiriyor
         IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max);  //arabada fiyat belirlerken max şu min şu olsun
         IDataResult<List<ProductDetailDto>> GetProductDetails();
