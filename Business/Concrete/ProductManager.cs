@@ -1,9 +1,12 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,24 +21,6 @@ namespace Business.Concrete
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
-        }
-
-        public IResult Add(Product product)
-        {
-            //business code
-            /*_productDal.Add(product);
-            /*bu şekilde yapmıyoruz
-             Result result = new Result();
-            result.Success(result);
-            return result;*/
-            //return new SuccessResult(); //add işlemini geçti true döndericek ve mesaj yanında
-            if (product.ProductName.Length<2)
-            {
-                //magic strings, hep aybı string
-                return new ErrorResult(Messages.ProductNameInvalid);
-            }
-            _productDal.Add(product);
-            return new SuccessResult(Messages.ProductAddded);
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -74,5 +59,53 @@ namespace Business.Concrete
             }*/
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
+        public IResult Add(Product product)
+        {
+            //business code
+            /*_productDal.Add(product);
+            /*bu şekilde yapmıyoruz
+             Result result = new Result();
+            result.Success(result);
+            return result;*/
+            //return new SuccessResult(); //add işlemini geçti true döndericek ve mesaj yanında
+
+
+            //validation--fluent validation ile bu aşağıdaki doğrulama kodlarından kurtulucaz
+            //if (product.ProductName.Length < 2)
+            //{
+            //    //magic strings, hep aybı string
+            //    return new ErrorResult(Messages.ProductNameInvalid);
+            //}
+
+            //var context = new ValidationContext<Product>(product);
+            //ProductValidator productValidator = new ProductValidator();
+            //var result = productValidator.Validate(context);
+            //if (!result.IsValid)
+            //{
+            //    throw new ValidationException(result.Errors);
+            //}
+
+
+
+            //loglama
+            //cacheremove
+            //performance
+            //transaction
+            //yetkilendirme 
+            //[Validate]
+            ValidationTool.Validate(new ProductValidator(),product);
+            //loglama
+            //cacheremove
+            //performance
+            //transaction
+            //yetkilendirme hepsi burada karışıcak yukarıda [validate]
+
+            //business codes
+
+
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAddded);
+        }
+
     }
 }
