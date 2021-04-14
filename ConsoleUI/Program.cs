@@ -21,11 +21,11 @@ namespace ConsoleUI
 
         private static void CategoryTest()
         {
-            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+            /*CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
             foreach (var category in categoryManager.GetAll())
             {
                 Console.WriteLine(category.CategoryName);
-            }
+            }*/
         }
 
         private static void ProductTest()

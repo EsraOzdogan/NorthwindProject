@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Business.Concrete
 {
+    //interfacler refrans tutucu
     public class CategoryManager : ICategoryService
     {
         //constructor injection
