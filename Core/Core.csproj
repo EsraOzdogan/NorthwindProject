@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interceptors\" />
+    <Folder Include="Utilities\Interceptors\" />
   </ItemGroup>
 
 </Project>
