@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -59,6 +60,11 @@ namespace Business.Concrete
             }*/
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
+
+
+        //[]method çalışmadan burdan geçicek
+        //Add methodunu ProductValidatora göre doğrula
+        [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
             //business code
@@ -93,7 +99,10 @@ namespace Business.Concrete
             //transaction
             //yetkilendirme 
             //[Validate]
-            ValidationTool.Validate(new ProductValidator(),product);
+            
+            //ValidationTool.Validate(new ProductValidator(),product);
+            
+            
             //loglama
             //cacheremove
             //performance
