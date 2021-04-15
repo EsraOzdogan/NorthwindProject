@@ -17,6 +17,7 @@ namespace Business.Abstract
         IDataResult<List<Product>> GetAllByUnitPrice(decimal min, decimal max);  //arabada fiyat belirlerken max şu min şu olsun
         IDataResult<List<ProductDetailDto>> GetProductDetails();
         IResult Add(Product product);
+        IResult Update(Product product);
         IDataResult<Product> GetById(int productId);             //sadece product dönderiyor,sitede tek ürünün özelliklerini döndürmek için
     }
 

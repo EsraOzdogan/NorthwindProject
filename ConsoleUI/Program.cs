@@ -47,7 +47,7 @@ namespace ConsoleUI
             }*/
 
 
-            ProductManager productManager = new ProductManager(new EfProductDal());
+            /*ProductManager productManager = new ProductManager(new EfProductDal());
             var result = productManager.GetProductDetails();
             if (result.Success==true)
             {
@@ -60,7 +60,7 @@ namespace ConsoleUI
             else
             {
                 Console.WriteLine(result.Message);
-            }
+            }*/
            
         }
 

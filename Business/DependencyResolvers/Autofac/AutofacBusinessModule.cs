@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
+using Business.CCS;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
@@ -19,6 +20,10 @@ namespace Business.DependencyResolvers.Autofac
         {
             builder.RegisterType<ProductManager>().As<IProductService>().SingleInstance();//data tutmadan operasyon çağırıyor single
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
+
+            //builder.RegisterType<FileLogger>().As<ILogger>().SingleInstance();  //ILogger istendiğinde arka planda FileLogger oluşturuyor newliyor yani
+            //ProductManager, EfProductDal için de aynsını yapıyor.Bellekte referanslarını oluşturuyor
+
 
             builder.RegisterType<CategoryManager>().As<ICategoryService>().SingleInstance();
             builder.RegisterType<EfCategoryDal>().As<ICategoryDal>().SingleInstance();

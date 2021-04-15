@@ -1,8 +1,10 @@
 ﻿using Business.Abstract;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -10,6 +12,7 @@ using Entities.DTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
@@ -19,9 +22,17 @@ namespace Business.Concrete
     {
         IProductDal _productDal;
 
-        public ProductManager(IProductDal productDal)
+        //ILogger _logger;
+
+        ICategoryService _categoryService;
+
+        public ProductManager(IProductDal productDal/*, ILogger logger*/, ICategoryService categoryService)
         {
             _productDal = productDal;
+
+            // _logger = logger;
+
+            _categoryService = categoryService;
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -99,10 +110,10 @@ namespace Business.Concrete
             //transaction
             //yetkilendirme 
             //[Validate]
-            
+
             //ValidationTool.Validate(new ProductValidator(),product);
-            
-            
+
+
             //loglama
             //cacheremove
             //performance
@@ -111,10 +122,90 @@ namespace Business.Concrete
 
             //business codes
 
+            /* Şu aşamada hata var desen vs çalışır ama karışık.Bu loglama, cache vs AOP ile tek noltaya alınıyor
+             _logger.Log();
+             try
+             {
+                 _productDal.Add(product);
+                 return new SuccessResult(Messages.ProductAddded);
+             }
+             catch (Exception)
+             {
 
+                 _logger.Log();
+             }
+             return new ErrorResult();*/
+
+            //bir kategoride en fazla 10 ürün olabilir
+            //var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count; //business code
+            //if (result>=10)
+            //{
+            //    return new ErrorResult(Messages.ProductCountOfCategoryError);
+            //}
+
+            //if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            //{
+            //    if (CheckIfProductNameExists(product.ProductName).Success)
+            //    {
+            //        _productDal.Add(product);
+            //        return new SuccessResult(Messages.ProductAddded);
+            //    }
+
+            //}
+            //return new ErrorResult();
+
+
+            IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName),
+                CheckIfProductCountOfCategoryCorrect(product.CategoryId),
+                CheckIfCategoryLimitExceded());
+            if (result != null)
+            {
+                return result;
+            }
             _productDal.Add(product);
+
             return new SuccessResult(Messages.ProductAddded);
         }
 
+        public IResult Update(Product product)
+        {
+            _productDal.Update(product);
+            return new SuccessResult(Messages.ProductUpdated);
+        }
+
+
+        //business code parçacığı
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            //Select count(*) from products where CategoryId=1
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count; //business code
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            return new SuccessResult();
+        }
+
+        //Aynı isimde product,ürün olamaz
+        private IResult CheckIfProductNameExists(string productName)
+        {
+            //Select count(*) from products where CategoryId=1
+            var result = _productDal.GetAll(p => p.ProductName == productName).Any(); //business code
+            if (result)
+            {
+                return new ErrorResult(Messages.ProductNameAlreadyExist);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfCategoryLimitExceded()
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count>15)
+            {
+                return new ErrorResult(Messages.CategoryLimitExceded);
+            }
+            return new SuccessResult();
+        }
     }
 }
