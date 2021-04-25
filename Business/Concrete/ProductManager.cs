@@ -86,7 +86,7 @@ namespace Business.Concrete
         //[]method çalışmadan burdan geçicek
         //Add methodunu ProductValidatora göre doğrula
         //Claim
-        [SecuredOperation("product.add,admin")]
+       // [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]//içinde Get olanlar
         public IResult Add(Product product)
