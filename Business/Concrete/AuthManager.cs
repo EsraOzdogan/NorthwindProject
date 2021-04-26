@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.Constants;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
@@ -13,8 +10,8 @@ namespace Business.Concrete
 {
     public class AuthManager : IAuthService
     {
-        private IUserService _userService;
-        private ITokenHelper _tokenHelper;
+        private readonly ITokenHelper _tokenHelper;
+        private readonly IUserService _userService;
 
         public AuthManager(IUserService userService, ITokenHelper tokenHelper)
         {
@@ -41,33 +38,31 @@ namespace Business.Concrete
 
         public IDataResult<User> Login(UserForLoginDto userForLoginDto)
         {
-            var userToCheck = _userService.GetByMail(userForLoginDto.Email);
-            if (userToCheck == null)
-            {
-                return new ErrorDataResult<User>(Messages.UserNotFound);
-            }
+            var userToCheckResult = _userService.GetByMail(userForLoginDto.Email);
+            if (!userToCheckResult.Success) return new ErrorDataResult<User>(userToCheckResult.Message);
 
-            if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash, userToCheck.PasswordSalt))
-            {
-                return new ErrorDataResult<User>(Messages.PasswordError);
-            }
+            var userToCheck = userToCheckResult.Data;
+            if (userToCheck == null) return new ErrorDataResult<User>(Messages.UserNotFound);
+
+            if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash,
+                userToCheck.PasswordSalt)) return new ErrorDataResult<User>(Messages.PasswordError);
 
             return new SuccessDataResult<User>(userToCheck, Messages.SuccessfulLogin);
         }
 
         public IResult UserExists(string email)
         {
-            if (_userService.GetByMail(email) != null)
-            {
-                return new ErrorResult(Messages.UserAlreadyExists);
-            }
+            var userResult = _userService.GetByMail(email);
+            if (!userResult.Success) return new ErrorResult(userResult.Message);
+            if (userResult.Data != null) return new ErrorResult(Messages.UserAlreadyExists);
             return new SuccessResult();
         }
 
         public IDataResult<AccessToken> CreateAccessToken(User user)
         {
-            var claims = _userService.GetClaims(user);
-            var accessToken = _tokenHelper.CreateToken(user, claims);
+            var claimsResult = _userService.GetClaims(user);
+            if (!claimsResult.Success) return new ErrorDataResult<AccessToken>(claimsResult.Message);
+            var accessToken = _tokenHelper.CreateToken(user, claimsResult.Data);
             return new SuccessDataResult<AccessToken>(accessToken, Messages.AccessTokenCreated);
         }
     }
